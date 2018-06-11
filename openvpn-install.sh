@@ -147,7 +147,7 @@ if [[ -e /etc/openvpn/server.conf ]]; then
 				if [[ "$OS" = 'debian' ]]; then
 					apt-get remove --purge -y openvpn
 				elif [[ "$OS" = 'arch' ]]; then
-					sudo pacman -Rc openvpn --noconfirm
+					sudo pacman -Rc openvpn --noconfirm --needed
 				else
 					yum remove openvpn -y
 				fi
