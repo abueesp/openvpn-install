@@ -28,8 +28,10 @@ if [[ -e /etc/debian_version ]]; then
 elif [[ -e /etc/centos-release || -e /etc/redhat-release ]]; then
 	OS=centos
 	GROUPNAME=nobody
+elif [[ -e /etc/arch-release ]]; then
+	OS=arch
 else
-	echo "Looks like you aren't running this installer on Debian, Ubuntu or CentOS"
+	echo "Looks like you aren't running this installer on Debian, Ubuntu, CentOS or Arch"
 	exit
 fi
 
@@ -63,7 +65,7 @@ if [[ -e /etc/openvpn/server.conf ]]; then
 		echo "   4) Exit"
 		read -p "Select an option [1-4]: " option
 		case $option in
-			1) 
+			1)
 			echo
 			echo "Tell me a name for the client certificate."
 			echo "Please, use one word only, no special characters."
@@ -115,7 +117,7 @@ if [[ -e /etc/openvpn/server.conf ]]; then
 			fi
 			exit
 			;;
-			3) 
+			3)
 			echo
 			read -p "Do you really want to remove OpenVPN? [y/N]: " -e REMOVE
 			if [[ "$REMOVE" = 'y' || "$REMOVE" = 'Y' ]]; then
@@ -144,6 +146,8 @@ if [[ -e /etc/openvpn/server.conf ]]; then
 				fi
 				if [[ "$OS" = 'debian' ]]; then
 					apt-get remove --purge -y openvpn
+				elif [[ "$OS" = 'arch' ]]; then
+					sudo pacman -Rc openvpn --noconfirm
 				else
 					yum remove openvpn -y
 				fi
@@ -185,10 +189,10 @@ else
 	echo "   2) TCP"
 	read -p "Protocol [1-2]: " -e -i 1 PROTOCOL
 	case $PROTOCOL in
-		1) 
+		1)
 		PROTOCOL=udp
 		;;
-		2) 
+		2)
 		PROTOCOL=tcp
 		;;
 	esac
@@ -213,6 +217,8 @@ else
 	if [[ "$OS" = 'debian' ]]; then
 		apt-get update
 		apt-get install openvpn iptables openssl ca-certificates -y
+	elif [[ "$OS" = 'arch' ]]; then
+		pacman -Syu --noconfirm
 	else
 		# Else, the distro is CentOS
 		yum install epel-release -y
